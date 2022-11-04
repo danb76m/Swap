@@ -8,32 +8,42 @@ namespace Swap
     {
 
         private static readonly Random random = new Random();
-        private static readonly int INC = 1000;
+        private static readonly int INC = 10000;
+        private static readonly int MAX = 1000000;
+
+        private static readonly int[] NUMBERS = randomNumbers(MAX, 0, 1000);
 
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            
-             
-            for (int x = 0; x < 100000000; x+=INC)
-            {
-                //Task.Factory.StartNew(() => test(x));
-                test(x);
-            }
-            
+            countdown(random.Next(30, 100));
+            Console.WriteLine("Boom!");
 
-            Console.ReadLine();
+            /*
+             *             for (int x = 0; x < MAX; x+=INC)
+            {
+
+                int[] arr = new int[x];
+                for (int i = 0; i < x; i++)
+                {
+                    arr[i] = NUMBERS[i];
+                }
+                //Task.Factory.StartNew(() => test(x));
+                test(arr);
+            }
+            */
+           
         }
 
-        private static void test(int size)
+        private static void test(int[] numbers)
         {
-            int[] numbers = randomNumbers(size, 0, 100);
+            //int[] numbers = randomNumbers(size, 0, 100);
             int[] numbersClone = clone(numbers);
 
             long insert = insertSort(numbers);
             long bubble = bubbleSort(numbersClone);
 
-            Console.WriteLine(size + " items: " + insert + "ms vs " + bubble + "ms (" + (bubble/(insert == 0 ? 0.00000001 : insert)) + ")");
+            Console.WriteLine(numbers.Length + " items: " + insert + "ms vs " + bubble + "ms (" + (bubble/(insert == 0 ? 0.00000001 : insert)) + ")");
         }
 
         public static long insertSort(int[] array)
@@ -45,7 +55,6 @@ namespace Swap
                 while(x > 0 && array[x-1] > array[x])
                 {
                     int temp = array[x-1];
-                    //int temp2 = array[x];
                     array[x - 1] = array[x];
                     array[x] = temp;
                     x = x - 1;
@@ -133,6 +142,14 @@ namespace Swap
         }
 
 
+        // Recursion
+        public static int countdown(int number)
+        {
+            Thread.Sleep(1000);
+            Console.WriteLine(number + " second" + (number == 1 ? "" : "s") + " remain");
+            if (number-- == 0) return number;
+            return countdown(number);
+        }
     }
 
 }
