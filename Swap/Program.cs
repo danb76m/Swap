@@ -9,18 +9,16 @@ namespace Swap
 
         private static readonly Random random = new Random();
         private static readonly int INC = 10000;
-        private static readonly int MAX = 1000000;
+        private static readonly int MAX = 10000000;
 
         private static readonly int[] NUMBERS = randomNumbers(MAX, 0, 1000);
+        private static readonly int[] LIST = randomNumbers(20, 0, 100);
 
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            countdown(random.Next(30, 100));
-            Console.WriteLine("Boom!");
 
-            /*
-             *             for (int x = 0; x < MAX; x+=INC)
+                         for (int x = 0; x < MAX; x+=INC)
             {
 
                 int[] arr = new int[x];
@@ -31,19 +29,28 @@ namespace Swap
                 //Task.Factory.StartNew(() => test(x));
                 test(arr);
             }
-            */
+            
            
+        }
+
+        private static String format(int[] array)
+        {
+            return "[" + String.Join(", ", array) + "]";
         }
 
         private static void test(int[] numbers)
         {
+            
             //int[] numbers = randomNumbers(size, 0, 100);
             int[] numbersClone = clone(numbers);
+            int[] mergeClone = clone(numbers);
 
-            long insert = insertSort(numbers);
-            long bubble = bubbleSort(numbersClone);
+            long merge = mergeSortTest(mergeClone, new int[mergeClone.Length], 0, mergeClone.Length - 1);
+            long insert = 0; //insertSort(numbers);
+            long bubble = 0; //bubbleSort(numbersClone);
+            
 
-            Console.WriteLine(numbers.Length + " items: " + insert + "ms vs " + bubble + "ms (" + (bubble/(insert == 0 ? 0.00000001 : insert)) + ")");
+            Console.WriteLine(numbers.Length + " items: " + insert + "ms vs " + bubble + "ms vs " + merge + "ms");
         }
 
         public static long insertSort(int[] array)
@@ -150,6 +157,77 @@ namespace Swap
             if (number-- == 0) return number;
             return countdown(number);
         }
+
+        // GCD Recursion
+        public static int gcd(int num1, int num2)
+        {
+            if (num2 == 0) return num1;
+            Console.WriteLine(num1 + "," + num2);
+            return gcd(num2, num1 % num2);
+        }
+
+        // GCD Iterative
+        public static int gcdIterative(int num1, int num2)
+        {
+            while(num2 != 0)
+            {
+                Console.WriteLine(num1 + "," + num2);
+                int temp = num2;
+                num2 = num1 % temp;
+                num1 = temp;
+            }
+            return num1;
+        }
+
+        // Merge Sort (Recursive)
+        public static long mergeSortTest(int[] unsorted, int[] temp, int leftStart, int rightEnd)
+        {
+            long l = Environment.TickCount;
+            mergeSort(unsorted, temp, leftStart, rightEnd);
+            return Environment.TickCount - l;
+        }
+
+            public static void mergeSort(int[] unsorted, int[] temp, int leftStart, int rightEnd)
+        {
+            if (leftStart >= rightEnd) return; // Stops recursive calls because the lists are off size 1
+            int mid = (leftStart + rightEnd) / 2; // Get middle
+            mergeSort(unsorted, temp, leftStart, mid);
+            mergeSort(unsorted, temp, mid + 1, rightEnd);
+
+            mergeHalves(unsorted, temp, leftStart, rightEnd);
+        }
+
+        public static void mergeHalves(int[] array, int[] temp, int leftStart, int rightEnd)
+        {
+            int leftEnd = (rightEnd + leftStart) / 2;
+            int rightStart = leftEnd + 1;
+            int size = rightEnd - leftStart + 1;
+
+            // these hold the index of the start points on the right and left list, index is the index we are at in our temp array that we are copying our numbers tos
+            int left = leftStart;
+            int right = rightStart;
+            int index = leftStart;
+            while(left <= leftEnd && right <= rightEnd) // Looping over the arrays until one of the arrays is empty so we can join that onto the new temp list
+            {
+                if (array[left] <= array[right])
+                {
+                    temp[index] = array[left];
+                    left++;
+                } else
+                {
+                    temp[index] = array[right];
+                    right++;
+                }
+                index++;
+            }
+
+            // Copying remaining list
+            Array.Copy(array, left, temp, index, leftEnd - left + 1);
+            Array.Copy(array, right, temp, index, rightEnd - right + 1);
+            Array.Copy(temp, leftStart, array, leftStart, size);
+            //Console.WriteLine(format(array));
+        }
+
     }
 
 }
